@@ -1,0 +1,1 @@
+from rentals.views.listing_views import ListingViewSet
