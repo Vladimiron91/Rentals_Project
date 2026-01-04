@@ -1,1 +1,1 @@
-from rentals.views.listing_views import ListingViewSet
+# rentals/__init__.py

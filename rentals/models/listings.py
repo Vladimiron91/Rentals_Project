@@ -27,7 +27,7 @@ class Listing(models.Model):
     property_type = models.CharField(max_length=20, choices=PropertyType.choices)
 
     #Aktiv / Inaktiv (Anzeige sichtbar oder verborgen)
-    is_active = models.BooleanField
+    is_active = models.BooleanField(default=True)
 
     #Systemfelder
     created_at = models.DateTimeField(auto_now_add=True)
