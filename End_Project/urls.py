@@ -29,16 +29,43 @@ from django.contrib import admin
 from django.urls import path, include
 from django.http import HttpResponse
 
+
 def home(request):
     html = """
     <h1>Rentals API</h1>
     <p>Доступные эндпоинты:</p>
     <ul>
         <li><a href="/api/v1/register/">Регистрация</a></li>
+        <li><a href="/api/v1/login/">Вход</a> (POST с username и password)</li>
+        <li><a href="/api/v1/logout/">Выход</a> (требуется аутентификация)</li>
+        <li><a href="/api/v1/current-user/">Текущий пользователь</a></li>
         <li><a href="/api/v1/listings/">Объявления</a></li>
         <li><a href="/api/v1/bookings/">Бронирования</a></li>
+        <li><a href="/api/v1/listings/search/?q=berlin">Поиск объявлений</a></li>
         <li><a href="/admin/">Админка</a></li>
     </ul>
+    
+    
+    
+    
+    
+
+    <h3>
+    Это поле только для меня кожаного, чтобы знать как правильно работать с Логином и Токенами
+    Пример входа через cURL:</h3>
+    
+    
+    <pre>
+    curl -X POST http://localhost:8000/api/v1/login/ \\
+      -H "Content-Type: application/json" \\
+      -d '{"username": "testuser", "password": "test123"}'
+    </pre>
+
+    <h3>Пример использования токена:</h3>
+    <pre>
+    curl -X GET http://localhost:8000/api/v1/current-user/ \\
+      -H "Authorization: Token YOUR_TOKEN_HERE"
+    </pre>
     """
     return HttpResponse(html)
 

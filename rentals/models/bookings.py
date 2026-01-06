@@ -42,7 +42,7 @@ class Booking(models.Model):
         Validierung: start < end und keine Überlappung mit bestätigten Buchungen.
         """
         if self.start_date >= self.end_date:
-            raise ValidationError("Дата начала должна быть раньше даты окончания.")
+            raise ValidationError("Das Startdatum muss vor dem Enddatum liegen.")
         overlapping = Booking.objects.filter(
             listing=self.listing,
             status=self.STATUS_CONFIRMED,
@@ -50,7 +50,7 @@ class Booking(models.Model):
             end_date__gt=self.start_date,
         ).exclude(pk=self.pk)
         if overlapping.exists():
-            raise ValidationError("Это место уже занято в выбранные даты.")
+            raise ValidationError("Dieser Platz ist zu den ausgewählten Terminen bereits belegt.")
 
     def save(self, *args, **kwargs):
         # Berechne total_price als price * nights (sofern Listing vorhanden)

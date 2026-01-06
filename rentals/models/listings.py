@@ -10,10 +10,8 @@ class PropertyType(models.TextChoices):
     room = "room", "Zimmer"
 
 #Imobilienanzeigen
-
 class Listing(models.Model):
     '''Hauptmodell für ein Immobilien-Angebot'''
-
     #Eigentümer der Anzeige(Vermieter)
     #One-to-Many: Ein Benutzer kann mehrere Anzeigen haben
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="listings")

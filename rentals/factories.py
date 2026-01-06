@@ -65,15 +65,56 @@
 
 #=================================================================================
 
+# import factory
+# from datetime import timedelta
+# from decimal import Decimal
+# from django.utils import timezone
+# from django.contrib.auth import get_user_model
+#
+# from rentals.models import Booking, Listing
+#
+# User = get_user_model()
+#
+# class UserFactory(factory.django.DjangoModelFactory):
+#     class Meta:
+#         model = User
+#
+#     username = factory.Faker("user_name")
+#     email = factory.LazyAttribute(lambda o: f"{o.username}@example.com")
+#     password = factory.PostGenerationMethodCall("set_password", "test123")
+#
+# class ListingFactory(factory.django.DjangoModelFactory):
+#     class Meta:
+#         model = Listing
+#
+#     title = factory.Faker("sentence", nb_words=4)
+#     description = factory.Faker("text", max_nb_chars=200)
+#     price = factory.LazyFunction(lambda: Decimal("75.00"))
+#
+# class BookingFactory(factory.django.DjangoModelFactory):
+#     class Meta:
+#         model = Booking
+#
+#     listing = factory.SubFactory(ListingFactory)
+#     user = factory.SubFactory(UserFactory)
+#
+#     start_date = factory.LazyFunction(lambda: timezone.now().date() + timedelta(days=1))
+#     end_date = factory.LazyFunction(lambda: timezone.now().date() + timedelta(days=4))
+#
+#     status = Booking.STATUS_PENDING
+
+#==================================================================================
 import factory
+from faker import Faker
 from datetime import timedelta
-from decimal import Decimal
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 
-from rentals.models import Booking, Listing
+from rentals.models import Listing, Booking, Review, SearchQuery
 
+faker = Faker()
 User = get_user_model()
+
 
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -83,13 +124,21 @@ class UserFactory(factory.django.DjangoModelFactory):
     email = factory.LazyAttribute(lambda o: f"{o.username}@example.com")
     password = factory.PostGenerationMethodCall("set_password", "test123")
 
+
 class ListingFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Listing
 
     title = factory.Faker("sentence", nb_words=4)
-    description = factory.Faker("text", max_nb_chars=200)
-    price = factory.LazyFunction(lambda: Decimal("75.00"))
+    description = factory.Faker("paragraph")
+    location = factory.Faker("city")
+    price = factory.Faker("random_int", min=40, max=300)
+    rooms = factory.Faker("random_int", min=1, max=5)
+    housing_type = factory.Iterator(["apartment", "house", "studio"])
+    owner = factory.SubFactory(UserFactory)
+    is_active = True
+    created_at = factory.LazyFunction(timezone.now)
+
 
 class BookingFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -99,6 +148,28 @@ class BookingFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
 
     start_date = factory.LazyFunction(lambda: timezone.now().date() + timedelta(days=1))
-    end_date = factory.LazyFunction(lambda: timezone.now().date() + timedelta(days=4))
+    end_date = factory.LazyAttribute(lambda o: o.start_date + timedelta(days=3))
+    status = factory.Iterator(["pending", "confirmed", "cancelled"])
 
-    status = Booking.STATUS_PENDING
+    total_price = factory.LazyAttribute(
+        lambda o: (o.end_date - o.start_date).days * o.listing.price
+    )
+
+
+class ReviewFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Review
+
+    listing = factory.SubFactory(ListingFactory)
+    user = factory.SubFactory(UserFactory)
+    rating = factory.Faker("pyfloat", min_value=1, max_value=5)
+    comment = factory.Faker("sentence")
+
+
+class SearchQueryFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = SearchQuery
+
+    user = factory.SubFactory(UserFactory)
+    query = factory.Faker("word")
+    count = factory.Faker("random_int", min=1, max=20)

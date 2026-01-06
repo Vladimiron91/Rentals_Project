@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django_filters',
 
     'rentals.apps.RentalsConfig',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
